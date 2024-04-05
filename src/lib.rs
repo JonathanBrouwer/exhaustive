@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 use std::iter;
 use std::marker::PhantomData;
 
@@ -7,11 +9,11 @@ pub use exhaustive_macros::exhaustive_test;
 mod impls;
 
 pub trait Exhaustive: Sized {
-    fn arbitrary(u: &mut DataSourceTaker) -> Result<Self>;
+    fn generate(u: &mut DataSourceTaker) -> Result<Self>;
 
-    fn iter_exhaustive(max_length: usize) -> impl Iterator<Item=Self> {
-        let mut source = DataSource::new(max_length);
-        iter::from_fn(move || source.next_run().map(|mut u| Self::arbitrary(&mut u))).flatten()
+    fn iter_exhaustive(max_choices: Option<usize>) -> impl Iterator<Item=Self> {
+        let mut source = DataSource::new(max_choices.unwrap_or(usize::MAX));
+        iter::from_fn(move || source.next_run().map(|mut u| Self::generate(&mut u))).flatten()
     }
 }
 
@@ -82,7 +84,7 @@ impl<T: Exhaustive> Iterator for DataSourceTakerIter<'_, '_, T> {
             return None
         }
         self.max_count -= 1;
-        match T::arbitrary(self.taker) {
+        match T::generate(self.taker) {
             Ok(v) => Some(Ok(v)),
             Err(e) => {
                 // Record max length reached

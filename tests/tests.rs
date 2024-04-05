@@ -3,7 +3,7 @@ use exhaustive::Exhaustive;
 #[test]
 fn test_bool() {
     assert_eq!(
-        bool::iter_exhaustive(2).collect::<Vec<_>>(),
+        bool::iter_exhaustive(Some(2)).collect::<Vec<_>>(),
         vec![false, true],
     );
 }
@@ -11,7 +11,7 @@ fn test_bool() {
 #[test]
 fn test_vec_bool() {
     assert_eq!(
-        Vec::<bool>::iter_exhaustive(3).collect::<Vec<_>>(),
+        Vec::<bool>::iter_exhaustive(Some(3)).collect::<Vec<_>>(),
         vec![
             vec![],
             vec![false],
@@ -29,7 +29,7 @@ fn test_vec_bool() {
 #[test]
 fn test_larger() {
     assert_eq!(
-        Vec::<bool>::iter_exhaustive(8).count(),
+        Vec::<bool>::iter_exhaustive(Some(8)).count(),
         255
     )
 }
@@ -37,7 +37,7 @@ fn test_larger() {
 #[test]
 fn test_vec_unit() {
     assert_eq!(
-        Vec::<()>::iter_exhaustive(4).count(),
+        Vec::<()>::iter_exhaustive(Some(4)).count(),
         5
     )
 }

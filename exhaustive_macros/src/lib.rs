@@ -38,7 +38,7 @@ pub fn exhaustive_test(args: TokenStream, input: TokenStream) -> TokenStream {
                         let ident = format_ident!("_v{i}");
                         args.push(ident.clone());
                         quote! {
-                            let #ident = match <#ty>::arbitrary(&mut run) {
+                            let #ident = match <#ty>::generate(&mut run) {
                                 Ok(v) => v,
                                 Err(_) => continue,
                             };
@@ -114,7 +114,7 @@ pub fn derive_exhaustive(tokens: TokenStream) -> TokenStream {
                 .map(|field| {
                     let fname = &field.ident;
                     quote! {
-                        #fname: ::exhaustive::Exhaustive::arbitrary(u)?
+                        #fname: ::exhaustive::Exhaustive::generate(u)?
                     }
                 })
                 .collect::<Punctuated<_, Token![,]>>();
@@ -128,7 +128,7 @@ pub fn derive_exhaustive(tokens: TokenStream) -> TokenStream {
                 .iter()
                 .map(|_field| {
                     quote! {
-                        ::exhaustive::Exhaustive::arbitrary(u)?
+                        ::exhaustive::Exhaustive::generate(u)?
                     }
                 })
                 .collect::<Punctuated<_, Token![,]>>();
@@ -172,7 +172,7 @@ pub fn derive_exhaustive(tokens: TokenStream) -> TokenStream {
 
     quote! {
         impl<#generics> ::exhaustive::Exhaustive for #name #ty_generics #where_clause {
-            fn arbitrary(u: &mut ::exhaustive::DataSourceTaker) -> Result<Self, ::exhaustive::ChoiceError> {
+            fn generate(u: &mut ::exhaustive::DataSourceTaker) -> Result<Self, ::exhaustive::ChoiceError> {
                 #fn_impl
             }
         }
