@@ -1,0 +1,22 @@
+[package]
+name = "exhaustive_macros"
+version = "0.1.1"
+authors = ["Jonathan Brouwer <jonathantbrouwer@gmail.com>"]
+description = "The trait for generating all values of a type, and a property-based test macro."
+keywords = ["property", "arbitrary", "testing", "quickcheck", "fuzz"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/JonathanBrouwer/Prism/exhaustive"
+
+[lib]
+name = "exhaustive_macros"
+path = "src/lib.rs"
+proc-macro = true
+
+[dependencies]
+quote = "1.0.35"
+syn = { version = "2", features = ["full"]}
+proc-macro2 = "1.0.79"
+
+[dev-dependencies]
+exhaustive = {path = ".."}
