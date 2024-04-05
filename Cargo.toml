@@ -9,8 +9,8 @@ license = "MIT"
 repository = "https://github.com/JonathanBrouwer/exhaustive"
 
 [dependencies]
-#exhaustive_macros = { version = "=0.1.1", optional = true }
-exhaustive_macros = { path = "./exhaustive_macros", optional = true }
+exhaustive_macros = { version = "=0.1.1", optional = true }
+#exhaustive_macros = { path = "./exhaustive_macros", optional = true }
 
 [features]
 default = ["macros"]

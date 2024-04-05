@@ -11,7 +11,9 @@ dependencies = [
 
 [[package]]
 name = "exhaustive_macros"
-version = "0.1.2"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "adaae6a6828ead5cbd37f31686fd3d33acf3e89b77bf8661f083241f4442aa00"
 dependencies = [
  "proc-macro2",
  "quote",
