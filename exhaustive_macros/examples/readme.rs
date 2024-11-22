@@ -15,6 +15,12 @@ struct Test2 {
     a: bool,
 }
 
+#[derive(Debug, Exhaustive)]
+enum Generic<T> {
+    A(T),
+    B(T),
+}
+
 #[exhaustive_test]
 fn test(v: Test1, w: Test2) {
     println!("{v:?} {w:?}");
