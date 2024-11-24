@@ -171,7 +171,7 @@ pub fn derive_exhaustive(tokens: TokenStream) -> TokenStream {
     };
 
     quote! {
-        impl<#generics> ::exhaustive::Exhaustive for #name #ty_generics #where_clause {
+        impl #generics ::exhaustive::Exhaustive for #name #ty_generics #where_clause {
             fn generate(u: &mut ::exhaustive::DataSourceTaker) -> Result<Self, ::exhaustive::ChoiceError> {
                 #fn_impl
             }
@@ -179,7 +179,7 @@ pub fn derive_exhaustive(tokens: TokenStream) -> TokenStream {
     }.into()
 }
 
-// Add a bound `T: Arbitrary` to every type parameter T.
+// Add a bound `T: Exhaustive` to every type parameter T.
 fn add_trait_bounds(mut generics: Generics) -> Generics {
     for param in generics.params.iter_mut() {
         if let GenericParam::Type(type_param) = param {
