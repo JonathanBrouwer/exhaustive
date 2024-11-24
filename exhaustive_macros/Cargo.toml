@@ -1,6 +1,6 @@
 [package]
 name = "exhaustive_macros"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Jonathan Brouwer <jonathantbrouwer@gmail.com>"]
 description = "The trait for generating all values of a type, and a property-based test macro."
 keywords = ["property", "arbitrary", "testing", "quickcheck", "fuzz"]
