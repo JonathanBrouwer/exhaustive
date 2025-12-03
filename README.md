@@ -12,6 +12,8 @@ Finally, it provides a test macro that run a property-based test for all values 
 ## Example
 
 ```rust
+use exhaustive::{Exhaustive, exhaustive_test};
+
 #[derive(Debug, Exhaustive)]
 enum Test1 { A, B, }
 #[derive(Debug, Exhaustive)]
@@ -60,6 +62,8 @@ For this to work, the `macros` feature of this crate needs to be enabled. This f
 
 The trait can be implemented by hand. The signature of the trait is:
 ```rust
+use exhaustive::{DataSourceTaker, Result};
+
 trait Exhaustive: Sized {
     fn generate(u: &mut DataSourceTaker) -> Result<Self>;
 }

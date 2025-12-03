@@ -1,9 +1,9 @@
+use crate::{ChoiceError, DataSourceTaker, Exhaustive};
 use std::cell::{Cell, RefCell, UnsafeCell};
-use std::collections::{BinaryHeap, BTreeMap, BTreeSet, HashMap, HashSet, LinkedList, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use std::hash::Hash;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex, RwLock};
-use crate::{ChoiceError, DataSourceTaker, Exhaustive};
 
 impl Exhaustive for bool {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
@@ -73,19 +73,26 @@ impl<T1: Exhaustive> Exhaustive for (T1,) {
 
 impl<T1: Exhaustive, T2: Exhaustive> Exhaustive for (T1, T2) {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok((T1::generate(u)?,T2::generate(u)?,))
+        Ok((T1::generate(u)?, T2::generate(u)?))
     }
 }
 
 impl<T1: Exhaustive, T2: Exhaustive, T3: Exhaustive> Exhaustive for (T1, T2, T3) {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok((T1::generate(u)?,T2::generate(u)?,T3::generate(u)?,))
+        Ok((T1::generate(u)?, T2::generate(u)?, T3::generate(u)?))
     }
 }
 
-impl<T1: Exhaustive, T2: Exhaustive, T3: Exhaustive, T4: Exhaustive> Exhaustive for (T1, T2, T3, T4) {
+impl<T1: Exhaustive, T2: Exhaustive, T3: Exhaustive, T4: Exhaustive> Exhaustive
+    for (T1, T2, T3, T4)
+{
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok((T1::generate(u)?,T2::generate(u)?,T3::generate(u)?,T4::generate(u)?))
+        Ok((
+            T1::generate(u)?,
+            T2::generate(u)?,
+            T3::generate(u)?,
+            T4::generate(u)?,
+        ))
     }
 }
 
@@ -127,7 +134,6 @@ impl<T: Exhaustive> Exhaustive for VecDeque<T> {
     }
 }
 
-
 impl<T: Exhaustive + Ord> Exhaustive for BTreeSet<T> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
         u.iter_of::<T>()?.collect::<Result<_, _>>()
@@ -160,8 +166,10 @@ impl<T: Exhaustive + Ord> Exhaustive for BinaryHeap<T> {
 
 impl<const N: usize, T: Exhaustive> Exhaustive for [T; N] {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok((0..N).map(|_| T::generate(u)).collect::<Result<Vec<_>, _>>()?.try_into().unwrap_or_else(|_| unreachable!()))
+        Ok((0..N)
+            .map(|_| T::generate(u))
+            .collect::<Result<Vec<_>, _>>()?
+            .try_into()
+            .unwrap_or_else(|_| unreachable!()))
     }
 }
-
-

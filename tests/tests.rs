@@ -24,20 +24,12 @@ fn test_vec_bool() {
     );
 }
 
-
-
 #[test]
 fn test_larger() {
-    assert_eq!(
-        Vec::<bool>::iter_exhaustive(Some(8)).count(),
-        255
-    )
+    assert_eq!(Vec::<bool>::iter_exhaustive(Some(8)).count(), 255)
 }
 
 #[test]
 fn test_vec_unit() {
-    assert_eq!(
-        Vec::<()>::iter_exhaustive(Some(4)).count(),
-        5
-    )
+    assert_eq!(Vec::<()>::iter_exhaustive(Some(4)).count(), 5)
 }

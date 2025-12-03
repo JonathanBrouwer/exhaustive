@@ -3,24 +3,32 @@
 use std::iter;
 use std::marker::PhantomData;
 
-pub use exhaustive_macros::Exhaustive;
 pub use exhaustive_macros::exhaustive_test;
+pub use exhaustive_macros::Exhaustive;
 
 mod impls;
 
 pub trait Exhaustive: Sized {
     fn generate(u: &mut DataSourceTaker) -> Result<Self>;
 
-    fn iter_exhaustive(max_choices: Option<usize>) -> impl Iterator<Item=Self> {
+    fn iter_exhaustive(max_choices: Option<usize>) -> impl Iterator<Item = Self> {
         let mut source = DataSource::new(max_choices.unwrap_or(usize::MAX));
         iter::from_fn(move || source.next_run().map(|mut u| Self::generate(&mut u))).flatten()
     }
 }
 
+#[derive(Copy, Clone)]
+struct Choice {
+    /// The last choice that was made
+    choice: usize,
+    /// Maximum choice, inclusive
+    max_choice: usize,
+}
+
 pub struct DataSourceTaker<'a> {
+    /// The amount of choices we can still make, only used for limiting the exponential growth
     choices_left: usize,
-    buffer_data: &'a mut Vec<usize>,
-    buffer_data_max: &'a mut Vec<usize>,
+    buffer: &'a mut Vec<Choice>,
     buffer_idx: usize,
 }
 
@@ -34,26 +42,29 @@ impl<'a> DataSourceTaker<'a> {
         self.choices_left = max_choices;
         self.buffer_idx = 0;
     }
-    
+
     pub fn choice(&mut self, range: usize) -> Result<usize> {
         assert!(range > 0);
-        if range == 1 {
-            return Ok(0)
-        }
+        let Some(max_choice) = range.checked_sub(1) else {
+            return Ok(0);
+        };
 
         if self.choices_left == 0 {
-            return Err(ChoiceError)
+            return Err(ChoiceError);
         }
         self.choices_left -= 1;
 
-        if self.buffer_idx < self.buffer_data.len() {
-            let data = self.buffer_data[self.buffer_idx];
+        if self.buffer_idx < self.buffer.len() {
+            let data = self.buffer[self.buffer_idx];
             self.buffer_idx += 1;
-            return Ok(data)
+            assert_eq!(data.max_choice, max_choice, "Choices are reproducible");
+            return Ok(data.choice);
         }
 
-        self.buffer_data.push(0);
-        self.buffer_data_max.push(range - 1);
+        self.buffer.push(Choice {
+            choice: 0,
+            max_choice,
+        });
         self.buffer_idx += 1;
         Ok(0)
     }
@@ -81,14 +92,15 @@ impl<T: Exhaustive> Iterator for DataSourceTakerIter<'_, '_, T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.max_count == 0 {
-            return None
+            return None;
         }
         self.max_count -= 1;
         match T::generate(self.taker) {
             Ok(v) => Some(Ok(v)),
             Err(e) => {
-                // Record max length reached
-                self.taker.buffer_data_max[self.max_count_idx] = self.taker.buffer_data[self.max_count_idx];
+                // Record max length reached, higher values of `max_count` won't have any effect
+                let max_count_choice = &mut self.taker.buffer[self.max_count_idx];
+                max_count_choice.max_choice = max_count_choice.choice;
                 Some(Err(e))
             }
         }
@@ -97,41 +109,38 @@ impl<T: Exhaustive> Iterator for DataSourceTakerIter<'_, '_, T> {
 
 pub struct DataSource {
     max_choices: usize,
-    buffer_data: Vec<usize>,
-    buffer_data_max: Vec<usize>,
-    first_run: bool
+    buffer: Vec<Choice>,
+    first_run: bool,
 }
 
 impl DataSource {
     pub fn new(max_choices: usize) -> Self {
         Self {
             max_choices,
-            buffer_data: vec![],
-            buffer_data_max: vec![],
-            first_run: true
+            buffer: vec![],
+            first_run: true,
         }
     }
 
     pub fn next_run(&mut self) -> Option<DataSourceTaker<'_>> {
         if !self.first_run {
-            for i in (0..self.buffer_data.len()).rev() {
-                if self.buffer_data[i] == self.buffer_data_max[i] {
-                    self.buffer_data.pop();
-                    self.buffer_data_max.pop();
+            for i in (0..self.buffer.len()).rev() {
+                let entry = &mut self.buffer[i];
+                if entry.choice == entry.max_choice {
+                    self.buffer.pop();
                 } else {
-                    self.buffer_data[i] += 1;
+                    entry.choice += 1;
                     break;
                 }
             }
-            if self.buffer_data.is_empty() {
-                return None
+            if self.buffer.is_empty() {
+                return None;
             }
         }
         self.first_run = false;
         Some(DataSourceTaker {
             choices_left: self.max_choices,
-            buffer_data: &mut self.buffer_data,
-            buffer_data_max: &mut self.buffer_data_max,
+            buffer: &mut self.buffer,
             buffer_idx: 0,
         })
     }
