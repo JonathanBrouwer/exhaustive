@@ -112,7 +112,7 @@ impl DataSource {
         }
     }
 
-    pub fn next_run(&mut self) -> Option<DataSourceTaker> {
+    pub fn next_run(&mut self) -> Option<DataSourceTaker<'_>> {
         if !self.first_run {
             for i in (0..self.buffer_data.len()).rev() {
                 if self.buffer_data[i] == self.buffer_data_max[i] {
@@ -123,7 +123,7 @@ impl DataSource {
                     break;
                 }
             }
-            if self.buffer_data.len() == 0 {
+            if self.buffer_data.is_empty() {
                 return None
             }
         }

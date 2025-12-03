@@ -111,50 +111,50 @@ impl<T: Exhaustive, E: Exhaustive> Exhaustive for Result<T, E> {
 
 impl<T: Exhaustive> Exhaustive for Vec<T> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok(u.iter_of::<T>()?.collect::<Result<_, _>>()?)
+        u.iter_of::<T>()?.collect::<Result<_, _>>()
     }
 }
 
 impl<T: Exhaustive> Exhaustive for LinkedList<T> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok(u.iter_of::<T>()?.collect::<Result<_, _>>()?)
+        u.iter_of::<T>()?.collect::<Result<_, _>>()
     }
 }
 
 impl<T: Exhaustive> Exhaustive for VecDeque<T> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok(u.iter_of::<T>()?.collect::<Result<_, _>>()?)
+        u.iter_of::<T>()?.collect::<Result<_, _>>()
     }
 }
 
 
 impl<T: Exhaustive + Ord> Exhaustive for BTreeSet<T> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok(u.iter_of::<T>()?.collect::<Result<_, _>>()?)
+        u.iter_of::<T>()?.collect::<Result<_, _>>()
     }
 }
 
 impl<K: Exhaustive + Ord, V: Exhaustive> Exhaustive for BTreeMap<K, V> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok(u.iter_of::<(K, V)>()?.collect::<Result<_, _>>()?)
+        u.iter_of::<(K, V)>()?.collect::<Result<_, _>>()
     }
 }
 
 impl<T: Exhaustive + Hash + Eq> Exhaustive for HashSet<T> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok(u.iter_of::<T>()?.collect::<Result<_, _>>()?)
+        u.iter_of::<T>()?.collect::<Result<_, _>>()
     }
 }
 
 impl<K: Exhaustive + Hash + Eq, V: Exhaustive> Exhaustive for HashMap<K, V> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok(u.iter_of::<(K, V)>()?.collect::<Result<_, _>>()?)
+        u.iter_of::<(K, V)>()?.collect::<Result<_, _>>()
     }
 }
 
 impl<T: Exhaustive + Ord> Exhaustive for BinaryHeap<T> {
     fn generate(u: &mut DataSourceTaker) -> Result<Self, ChoiceError> {
-        Ok(u.iter_of::<T>()?.collect::<Result<_, _>>()?)
+        u.iter_of::<T>()?.collect::<Result<_, _>>()
     }
 }
 
